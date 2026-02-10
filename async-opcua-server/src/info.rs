@@ -279,10 +279,17 @@ impl ServerInfo {
     }
 
     /// Get the base endpoint, i.e. the configured host + current port.
+    /// If `public_host` is set, it is used instead of the bind address.
     pub fn base_endpoint(&self) -> String {
+        let host = self
+            .config
+            .tcp_config
+            .public_host
+            .as_deref()
+            .unwrap_or(&self.config.tcp_config.host);
         format!(
             "opc.tcp://{}:{}",
-            self.config.tcp_config.host,
+            host,
             self.port.load(Ordering::Relaxed)
         )
     }

@@ -30,10 +30,15 @@ pub const ANONYMOUS_USER_TOKEN_ID: &str = "ANONYMOUS";
 pub struct TcpConfig {
     /// Timeout for hello on a session in seconds
     pub hello_timeout: u32,
-    /// The hostname to supply in the endpoints
+    /// The hostname to bind the socket to
     pub host: String,
     /// The port number of the service
     pub port: u16,
+    /// Optional public hostname used in endpoint URLs.
+    /// When set, endpoint URLs will use this hostname instead of `host`.
+    /// This allows binding to `0.0.0.0` while advertising a proper hostname.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub public_host: Option<String>,
 }
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Clone, Default)]
@@ -391,6 +396,7 @@ impl Default for ServerConfig {
                 host: "127.0.0.1".to_string(),
                 port: constants::DEFAULT_RUST_OPC_UA_SERVER_PORT,
                 hello_timeout: constants::DEFAULT_HELLO_TIMEOUT_SECONDS,
+                public_host: None,
             },
             limits: Limits::default(),
             user_tokens: BTreeMap::new(),
@@ -451,6 +457,7 @@ impl ServerConfig {
                 host,
                 port,
                 hello_timeout: constants::DEFAULT_HELLO_TIMEOUT_SECONDS,
+                public_host: None,
             },
             locale_ids,
             user_tokens,

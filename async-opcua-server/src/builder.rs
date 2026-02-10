@@ -370,6 +370,13 @@ impl ServerBuilder {
         self
     }
 
+    /// Public hostname used in endpoint URLs.
+    /// When set, endpoint URLs will use this hostname instead of the bind address.
+    pub fn public_host(mut self, public_host: impl Into<String>) -> Self {
+        self.config.tcp_config.public_host = Some(public_host.into());
+        self
+    }
+
     /// Port number used to listen for incoming TCP connections.
     pub fn port(mut self, port: u16) -> Self {
         self.config.tcp_config.port = port;
