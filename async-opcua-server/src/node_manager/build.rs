@@ -8,7 +8,7 @@ use super::{DynNodeManager, NodeManager, ServerContext};
 ///
 /// Build is infallible, if you need anything to fail, you need to either panic or
 /// propagate that failure to the user when creating the builder.
-pub trait NodeManagerBuilder {
+pub trait NodeManagerBuilder: Send {
     /// Build the node manager, you can store data from `context`, but you should not
     /// hold any locks when this method has finished.
     fn build(self: Box<Self>, context: ServerContext) -> Arc<DynNodeManager>;
@@ -16,7 +16,7 @@ pub trait NodeManagerBuilder {
 
 impl<T, R: NodeManager + Send + Sync + 'static> NodeManagerBuilder for T
 where
-    T: FnOnce(ServerContext) -> R,
+    T: FnOnce(ServerContext) -> R + Send,
 {
     fn build(self: Box<Self>, context: ServerContext) -> Arc<DynNodeManager> {
         Arc::new(self(context))

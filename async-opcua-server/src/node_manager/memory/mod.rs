@@ -82,7 +82,7 @@ impl<T: InMemoryNodeManagerImplBuilder> InMemoryNodeManagerBuilder<T> {
     }
 }
 
-impl<T: InMemoryNodeManagerImplBuilder> NodeManagerBuilder for InMemoryNodeManagerBuilder<T> {
+impl<T: InMemoryNodeManagerImplBuilder + Send> NodeManagerBuilder for InMemoryNodeManagerBuilder<T> {
     fn build(self: Box<Self>, context: ServerContext) -> Arc<DynNodeManager> {
         let mut address_space = AddressSpace::new();
         let inner = self.impl_builder.build(context, &mut address_space);
